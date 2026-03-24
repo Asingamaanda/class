@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}SEO Dashboard — {{ brand_name }}{% endblock %}
+{% block content %}
+<div class="glass-container" style="margin:2rem auto;max-width:700px;padding:2rem;">
+    <h1>SEO & Geo Ranking Dashboard</h1>
+    <form method="post">
+        <label for="queries">Enter search queries (one per line):</label><br>
+        <textarea name="queries" rows="6" style="width:100%;margin-bottom:1rem;"></textarea><br>
+        <button type="submit" class="btn-cinematic">Check Rankings</button>
+    </form>
+    {% if error %}
+        <div style="color:#ef4444;margin-top:1rem;">Error: {{ error }}</div>
+    {% endif %}
+    {% if results %}
+        <h2 style="margin-top:2rem;">Results</h2>
+        <table style="width:100%;margin-top:1rem;">
+            <tr><th>Query</th><th>Status</th><th>Result</th></tr>
+            {% for r in results %}
+                <tr>
+                    <td>{{ r.query }}</td>
+                    <td>{{ r.status }}</td>
+                    <td><pre>{{ r.result }}</pre></td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</div>
+{% endblock %}
