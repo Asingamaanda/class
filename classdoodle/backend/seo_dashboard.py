@@ -1,5 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
-import httpx
+from flask import Blueprint, render_template, request
 import os
 
 seo_dashboard = Blueprint('seo_dashboard', __name__)
@@ -15,6 +14,7 @@ def seo_dashboard_view():
         queries = request.form.get('queries', '').splitlines()
         queries = [q.strip() for q in queries if q.strip()]
         try:
+            import httpx  # Optional dependency; lazy import avoids startup failure.
             with httpx.Client(timeout=30) as client:
                 for q in queries:
                     payload = {"queries": [q], "site_hostname": SITE_HOSTNAME}
