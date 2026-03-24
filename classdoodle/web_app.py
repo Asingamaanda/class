@@ -80,7 +80,6 @@ def _register_optional_blueprint(module_path: str, blueprint_name: str) -> None:
 
 # Register optional blueprints (never hard-fail app startup)
 _register_optional_blueprint('backend.seo', 'seo_bp')
-_register_optional_blueprint('backend.seo_dashboard', 'seo_dashboard')
 _register_optional_blueprint('backend.premium', 'premium_bp')
 app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500 MB
 
