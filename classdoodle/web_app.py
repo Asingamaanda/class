@@ -14,6 +14,8 @@ from urllib.parse import quote_plus
 import os
 import secrets
 import hashlib
+import importlib
+import sys
 
 from backend.db_adapter import get_connection, release_connection, qexec, PH, managed_connection
 from backend.api import ClassDoodleAPI
@@ -22,7 +24,6 @@ from backend.mailer import send_application_email, send_whatsapp_notification
 from timetable_generator import (generate_daily_timetable, WEEKLY_SCHEDULE,
                                  CORE_SUBJECTS, generate_smart_timetable,
                                  SUBJECT_DEFAULT_FREQS, PERIOD_TIMES, DAYS as TT_DAYS)
-from backend.premium import premium_bp
 
 app = Flask(__name__)
 _secret = os.environ.get('SECRET_KEY')
@@ -64,12 +65,23 @@ UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
 ALLOWED_EXTENSIONS = {'mp4', 'webm', 'mov', 'avi', 'mkv'}
 app.config['UPLOAD_FOLDER'] = str(UPLOAD_FOLDER)
 
-# Register SEO blueprints
-from backend.seo import seo_bp
-from backend.seo_dashboard import seo_dashboard
-app.register_blueprint(seo_bp)
-app.register_blueprint(seo_dashboard)
-app.register_blueprint(premium_bp)
+def _register_optional_blueprint(module_path: str, blueprint_name: str) -> None:
+    """Register optional blueprints without taking down app startup."""
+    try:
+        module = importlib.import_module(module_path)
+        blueprint = getattr(module, blueprint_name)
+        app.register_blueprint(blueprint)
+    except Exception as exc:  # broad by design: import/dependency/runtime issues
+        print(
+            f"WARNING: Optional blueprint '{module_path}.{blueprint_name}' not loaded: {exc}",
+            file=sys.stderr,
+        )
+
+
+# Register optional blueprints (never hard-fail app startup)
+_register_optional_blueprint('backend.seo', 'seo_bp')
+_register_optional_blueprint('backend.seo_dashboard', 'seo_dashboard')
+_register_optional_blueprint('backend.premium', 'premium_bp')
 app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500 MB
 
 CONTENT_UPLOAD_FOLDER = Path(__file__).parent / 'static' / 'uploads' / 'subject_content'
