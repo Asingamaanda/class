@@ -31,11 +31,12 @@ Open `http://localhost:5000` in your browser.
 ## Default Login
 | Role | Username | Password |
 |------|----------|----------|
-| Admin/Teacher | `admin` | `Classdoodle@password` |
-| Student | _student ID_ | _set via admin panel_ |
+| Admin/Teacher | `admin` | _set via `ADMIN_BOOTSTRAP_PASSWORD`_ |
+| Student | _student ID_ | _temporary/generated or set via admin panel_ |
 
 ## Stack
 - Python 3.13 + Flask 3.1
 - SQLite (local database)
 - Jinja2 templates
 - Vanilla CSS (custom design system)
+# class
